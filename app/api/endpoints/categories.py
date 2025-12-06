@@ -5,6 +5,8 @@ from typing import List
 from app.database.database import get_db
 from app.schemas.category import Category, CategoryCreate, CategoryUpdate
 from app.crud.category import category as category_crud
+from app.dependencies.auth import get_current_active_user, get_current_admin
+from app.models.user import User
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
@@ -13,18 +15,21 @@ router = APIRouter(prefix="/categories", tags=["categories"])
 def read_categories(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """
     Retrieve all categories with pagination.
     """
-    return category_crud.get_all(db, skip=skip, limit=limit)
+    categories = category_crud.get_all(db, skip=skip, limit=limit)
+    return categories
 
 
 @router.get("/{category_id}", response_model=Category)
 def read_category(
     category_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """
     Retrieve a specific category by ID.
@@ -41,11 +46,13 @@ def read_category(
 @router.post("/", response_model=Category, status_code=status.HTTP_201_CREATED)
 def create_category(
     category: CategoryCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """
     Create a new category.
     """
+    # Check if category with same name exists
     existing_category = category_crud.get_by_name(db, category.name)
     if existing_category:
         raise HTTPException(
@@ -60,7 +67,8 @@ def create_category(
 def update_category(
     category_id: int,
     category: CategoryUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """
     Update a category.
@@ -77,7 +85,8 @@ def update_category(
 @router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_category(
     category_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """
     Delete a category.

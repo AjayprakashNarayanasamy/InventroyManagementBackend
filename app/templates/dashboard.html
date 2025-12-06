@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>Dashboard</h2>
+        <p class="text-muted">Welcome back!</p>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 id="totalProducts">0</h5>
+                <p class="text-muted">Total Products</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 id="lowStock">0</h5>
+                <p class="text-muted">Low Stock</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 id="totalSales">0</h5>
+                <p class="text-muted">Today's Sales</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 id="totalRevenue">₹0</h5>
+                <p class="text-muted">Today's Revenue</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Products -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Products</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Stock</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentProducts">
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <a href="/products" class="btn btn-sm btn-outline-primary w-100">View All Products</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Sales -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Sales</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Sale #</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentSales">
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <a href="/sales" class="btn btn-sm btn-outline-primary w-100">View All Sales</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Check if user is logged in
+// if (!localStorage.getItem('token')) {
+//     window.location.href = '/login';
+// }
+
+// Load dashboard data
+async function loadDashboard() {
+    try {
+        // Load products
+        const products = await apiCall('GET', '/products?limit=5');
+        if (products) {
+            document.getElementById('totalProducts').textContent = products.length || 0;
+            populateRecentProducts(products);
+        }
+        
+        // Load sales
+        const sales = await apiCall('GET', '/sales?limit=5');
+        if (sales) {
+            document.getElementById('totalSales').textContent = sales.length || 0;
+            populateRecentSales(sales);
+            
+            // Calculate revenue
+            let revenue = 0;
+            sales.forEach(sale => {
+                revenue += parseFloat(sale.grand_total) || 0;
+            });
+            document.getElementById('totalRevenue').textContent = '₹' + revenue.toFixed(2);
+        }
+        
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+    }
+}
+
+function populateRecentProducts(products) {
+    const tbody = document.getElementById('recentProducts');
+    tbody.innerHTML = '';
+    
+    products.forEach(product => {
+        const row = `
+            <tr>
+                <td>${product.name}</td>
+                <td><span class="badge ${product.current_stock <= product.min_stock_level ? 'bg-warning' : 'bg-success'}">${product.current_stock}</span></td>
+                <td>₹${product.selling_price}</td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+function populateRecentSales(sales) {
+    const tbody = document.getElementById('recentSales');
+    tbody.innerHTML = '';
+    
+    sales.forEach(sale => {
+        const row = `
+            <tr>
+                <td>${sale.sale_number}</td>
+                <td>${sale.customer_name || 'Walk-in'}</td>
+                <td>₹${sale.grand_total}</td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+// Load data on page load
+document.addEventListener('DOMContentLoaded', loadDashboard);
+</script>
+{% endblock %}

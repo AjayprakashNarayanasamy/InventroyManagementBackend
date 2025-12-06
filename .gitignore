@@ -1,0 +1,61 @@
+# Python
+# ----------------------------------------------------
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.pkl
+*.ini
+
+# Environments
+.env
+.venv
+venv/
+env/
+/site/
+
+# History files
+.history
+
+# IDEs and Editors
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Operating System specific files
+.DS_Store
+Thumbs.db
+
+# Testing and Coverage
+.coverage
+.tox/
+/htmlcov/
+
+# Logs and databases
+# Logs
+*.log
+/logs/
+
+# SQLite databases (common for development or small projects)
+*.db
+*.sqlite
+*.sqlite3

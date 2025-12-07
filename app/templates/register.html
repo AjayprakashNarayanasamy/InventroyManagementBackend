@@ -59,6 +59,13 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     const full_name = document.getElementById('full_name').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
+
+    let datavalue = {
+        "username": username,
+        "email": email,
+        "full_name": full_name,
+        "password": password
+    };
     
     // VALIDATIONS
     // 1. Check password length
@@ -93,8 +100,8 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     
     // Prepare data
     const data = {
-"email": "Ajay.Pakash@agilisium.com",
-"username": "AjayPra",
+"email": "Ajss@agilisium.com",
+"username": "AjPra",
 "full_name": "Ajay",
 "password": "123456"
 }
@@ -107,8 +114,8 @@ document.getElementById('registerForm').addEventListener('submit', async functio
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)
-
+            body: JSON.stringify(datavalue)
+            
         });
         
         if (response.ok) {

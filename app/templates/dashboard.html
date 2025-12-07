@@ -115,6 +115,7 @@ if (!localStorage.getItem('token')) {
 async function loadDashboard() {
     try {const token = localStorage.getItem('token');
         // Load products
+        checkLogin()
         let products = await fetch('/api/v1/products',{
             method: 'GET',
             headers: {

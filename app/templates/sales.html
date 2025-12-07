@@ -7,9 +7,9 @@
     <div class="col-8">
         <h2>Sales</h2>
     </div>
-    <div class="col-4 text-end">
+    <!-- <div class="col-4 text-end">
         <a href="/sales/create" class="btn btn-primary">+ New Sale</a>
-    </div>
+    </div> -->
 </div>
 
 <div class="card">
@@ -24,7 +24,6 @@
                         <th>Items</th>
                         <th>Total</th>
                         <th>Status</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="salesBody">
@@ -82,11 +81,6 @@ function renderSales(sales) {
                     <span class="badge ${sale.status === 'completed' ? 'bg-success' : 'bg-warning'}">
                         ${sale.status}
                     </span>
-                </td>
-                <td>
-                    <button class="btn btn-sm btn-outline-primary" onclick="viewSale(${sale.id})">
-                        View
-                    </button>
                 </td>
             </tr>
         `;

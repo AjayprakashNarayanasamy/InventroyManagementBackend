@@ -49,33 +49,82 @@
 
 {% block scripts %}
 <script>
+
 document.getElementById('registerForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
+    // Get form values
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const full_name = document.getElementById('full_name').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
     
+    // VALIDATIONS
+    // 1. Check password length
+    if (password.length < 6) {
+        alert('Password must be at least 6 characters long');
+        return;
+    }
+    
+    // 2. Check if username looks like an email (optional but recommended)
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailPattern.test(username)) {
+        const useEmail = confirm('You entered an email as username. Usernames are usually simpler (like "ajayp"). Do you want to continue with email as username?');
+        if (!useEmail) {
+            alert('Please choose a simpler username (not an email address)');
+            document.getElementById('username').focus();
+            return;
+        }
+    }
+    
+    // 3. Check if passwords match
     if (password !== confirmPassword) {
         alert('Passwords do not match!');
         return;
     }
     
+    // 4. Check if username and email are different
+    if (username.toLowerCase() === email.toLowerCase()) {
+        alert('Username and email should be different. Please choose a different username.');
+        document.getElementById('username').focus();
+        return;
+    }
+    
+    // Prepare data
     const data = {
-        username: document.getElementById('username').value,
-        email: document.getElementById('email').value,
-        full_name: document.getElementById('full_name').value,
-        password: password
-    };
+"email": "Ajay.Pakash@agilisium.com",
+"username": "AjayPra",
+"full_name": "Ajay",
+"password": "123456"
+}
     
-    const result = await apiCall('POST', '/auth/register', data);
+    console.log('Sending registration:', data);
     
-    if (result && result.access_token) {
-        localStorage.setItem('token', result.access_token);
-        localStorage.setItem('user', JSON.stringify(result.user || {}));
-        window.location.href = '/dashboard';
-    } else {
-        alert('Registration failed. Try a different username or email.');
+    try {
+        const response = await fetch('/api/v1/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            alert('Registration successful! Please login.');
+            window.location.href = '/login';
+        } else {
+            const error = await response.json();
+            alert('Registration failed: ' + (error.detail || 'Please check your inputs'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Registration failed. Please try again.');
     }
 });
+
+
 </script>
 {% endblock %}

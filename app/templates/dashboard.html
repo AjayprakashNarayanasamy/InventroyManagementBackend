@@ -107,15 +107,23 @@
 {% block scripts %}
 <script>
 // Check if user is logged in
-// if (!localStorage.getItem('token')) {
-//     window.location.href = '/login';
-// }
+if (!localStorage.getItem('token')) {
+    window.location.href = '/login';
+}
 
 // Load dashboard data
 async function loadDashboard() {
-    try {
+    try {const token = localStorage.getItem('token');
         // Load products
-        const products = await apiCall('GET', '/products?limit=5');
+        let products = await fetch('/api/v1/products',{
+            method: 'GET',
+            headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': token ? `Bearer ${token}` : ''
+          },
+        });
+        products = await products.json();
+        // console.log('Products response status:', await products.json());
         if (products) {
             document.getElementById('totalProducts').textContent = products.length || 0;
             populateRecentProducts(products);

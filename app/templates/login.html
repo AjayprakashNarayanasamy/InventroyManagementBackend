@@ -55,11 +55,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     
     try {
         const formData = new URLSearchParams();
-        formData.append('username', 'test');
-        formData.append('password', 'test123');
-        {
-          
-        }
+        formData.append('username', data.username);
+        formData.append('password', data.password);
         const response = await fetch('/api/v1/auth/login', {
             method: 'POST',
            headers: {

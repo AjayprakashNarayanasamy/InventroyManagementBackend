@@ -160,7 +160,18 @@ document.getElementById('addProductForm').addEventListener('submit', async funct
         current_stock: parseInt(document.getElementById('current_stock').value)
     };
     
-    const result = await apiCall('POST', '/products', productData);
+    console.log('Adding product:', productData);
+
+   const result = await fetch('/api/v1/products', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(productData)
+        });
+    
+    // const result = await apiCall('POST', '/products', productData);
     
     if (result && result.id) {
         // Close modal and reset form

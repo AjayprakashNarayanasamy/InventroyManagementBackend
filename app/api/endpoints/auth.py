@@ -19,6 +19,7 @@ def register(
     db: Session = Depends(get_db)
 ):
     # Check if user with same email exists
+    print("Registering user:", user.email, user.username )
     db_user = user_crud.get_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -37,7 +38,7 @@ def login(
     db: Session = Depends(get_db)
 ):
     print("Login attempt for user:", form_data.username, form_data.password )
-    user = user_crud.authenticate(db, username="Ajay", password="Test@123")
+    user = user_crud.authenticate(db, username=form_data.username, password=form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
